@@ -1,0 +1,200 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<!-- Demo video stage. Copy to <work>/stage.html next to video.js (window.V) and raw/. Driven only by seek(t). -->
+<script src="raw/manifest.js"></script>
+<script src="timing.js"></script>
+<script src="video.js"></script>
+<script>document.write('<link rel="stylesheet" href="' + (V.theme.fontUrl || '') + '">');</script>
+<style>
+  * { box-sizing:border-box; margin:0; padding:0; }
+  html, body { width:1920px; height:1080px; overflow:hidden; background:var(--bg); }
+  body { font-family:var(--font), system-ui, sans-serif; color:var(--ink); -webkit-font-smoothing:antialiased; }
+  #stage { position:relative; width:1920px; height:1080px; overflow:hidden; background:var(--bg); }
+  .abs { position:absolute; }
+  .card { left:0; top:0; width:1920px; height:1080px; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; }
+  .eyebrow { font-size:22px; font-weight:500; color:var(--accent); letter-spacing:0.01em; margin-bottom:18px; }
+  .big { font-size:104px; font-weight:500; letter-spacing:-0.025em; line-height:1.02; }
+  .sub { font-size:28px; color:var(--ink2); margin-top:26px; line-height:1.4; text-wrap:balance; max-width:900px; }
+  #win { left:200px; top:56px; width:1520px; height:860px; background:#fff; border-radius:20px; overflow:hidden; transform-origin:50% 50%;
+         box-shadow:0 1px 2px rgba(0,0,0,.05), 0 24px 60px -12px rgba(0,0,0,.16); }
+  .bar { height:46px; background:#FAFAF8; border-bottom:1px solid #ECEBE6; position:relative; }
+  .dots { position:absolute; left:20px; top:17px; display:flex; gap:8px; }
+  .dots i { width:12px; height:12px; border-radius:50%; background:#DEDCD6; display:block; }
+  .addr { position:absolute; left:50%; top:9px; width:440px; margin-left:-220px; height:28px; border-radius:8px; background:#F0EFEB;
+          font-size:15px; line-height:28px; color:#6B6E6F; text-align:center; }
+  .addr span { position:absolute; left:0; right:0; }
+  .vp { position:absolute; left:0; top:46px; width:1520px; height:814px; overflow:hidden; background:#fff; }
+  .shot { position:absolute; left:0; top:0; transform-origin:0 0; will-change:transform,opacity; }
+  .shot img, .pshot img { display:block; width:100%; }
+  .navov { position:absolute; left:0; top:0; width:1520px; }
+  #phone { left:1480px; top:102px; width:364px; height:768px; border-radius:56px; background:#1B1C1D; padding:12px; box-shadow:0 30px 60px -18px rgba(0,0,0,.35); }
+  .pscreen { position:relative; width:340px; height:744px; border-radius:44px; overflow:hidden; background:#fff; }
+  .pshot { position:absolute; left:0; top:0; transform-origin:0 0; }
+  .pnav { position:absolute; left:0; top:0; width:340px; }
+  #skill { left:330px; top:56px; width:1260px; height:860px; background:var(--inverse); border-radius:24px; overflow:hidden; color:var(--onInverse);
+           box-shadow:0 30px 70px -20px rgba(0,0,0,.45); }
+  .sk-head { position:absolute; left:56px; right:56px; top:48px; }
+  .sk-row { display:flex; align-items:center; gap:16px; }
+  .sk-cmd { font-size:22px; font-weight:500; color:#fff; background:rgba(255,255,255,.1); border-radius:100px; padding:8px 18px; }
+  .sk-meta { font-size:18px; opacity:.6; }
+  .sk-desc { font-size:20px; line-height:1.5; opacity:.78; margin-top:18px; max-width:1060px; text-wrap:balance; }
+  .sk-body { position:absolute; left:56px; right:56px; top:200px; bottom:0; overflow:hidden; border-top:1px solid rgba(255,255,255,.1); }
+  .sk-inner { padding-top:26px; }
+  .sk-h { font-size:14px; font-weight:600; letter-spacing:.09em; text-transform:uppercase; color:var(--accentOnInverse); margin:22px 0 10px 14px; }
+  .sk-h:first-child { margin-top:0; }
+  .sk-b { position:relative; font-size:19px; line-height:1.5; padding:6px 16px 6px 30px; border-radius:10px; }
+  .sk-b::before { content:""; position:absolute; left:14px; top:18px; width:5px; height:5px; border-radius:50%; background:currentColor; opacity:.6; }
+  .sk-b .band { position:absolute; inset:0; border-radius:10px; background:rgba(255,255,255,.07); box-shadow:inset 3px 0 0 var(--accentOnInverse); opacity:0; }
+  .sk-b span { position:relative; }
+  .sk-fade { position:absolute; left:0; right:0; bottom:0; height:90px; background:linear-gradient(transparent, var(--inverse)); }
+  .cap { left:0; width:1920px; top:960px; text-align:center; }
+  .cap span { display:inline-block; font-size:24px; font-weight:500; color:#fff; background:rgba(27,28,29,.92); border-radius:100px; padding:13px 26px; letter-spacing:.003em; }
+  /* end scene: an agent chat panel (dark, neutral) with the skill command being typed */
+  .agent { width:780px; margin-top:40px; border-radius:22px; background:#151515; color:#ECECEC; text-align:left; overflow:hidden; position:relative;
+           box-shadow:0 1px 2px rgba(0,0,0,.2), 0 30px 70px -24px rgba(0,0,0,.5); border:1px solid rgba(255,255,255,.07); }
+  .ag-tabs { display:flex; gap:6px; padding:16px 18px 0; font-size:17px; font-weight:500; }
+  .ag-tabs span { padding:7px 14px; border-radius:9px; color:#8C8C8C; }
+  .ag-tabs span.on { background:#272727; color:#fff; }
+  .ag-sel { display:flex; gap:10px; margin:14px 18px 0; }
+  .ag-sel .box { flex:1; display:flex; justify-content:space-between; align-items:center; background:#1F1F1F; border:1px solid rgba(255,255,255,.06); border-radius:11px; padding:11px 15px; font-size:17px; color:#E4E4E4; }
+  .ag-sel .plus { width:44px; border-radius:11px; background:#1F1F1F; border:1px solid rgba(255,255,255,.06); display:flex; align-items:center; justify-content:center; }
+  .ag-body { position:relative; height:148px; margin:0 18px; }
+  .ag-menu { position:absolute; left:0; right:0; bottom:10px; border-radius:14px; background:#212121; border:1px solid rgba(255,255,255,.08); padding:12px 14px; display:flex; align-items:center; gap:14px;
+             box-shadow:0 14px 30px -14px rgba(0,0,0,.6); }
+  .ag-menu .cmd { flex:none; font-size:18px; font-weight:500; color:#fff; background:rgba(255,255,255,.1); border-radius:8px; padding:6px 12px; }
+  .ag-menu .d { font-size:16px; color:#A0A0A0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .ag-comp { margin:0 18px 18px; height:78px; border-radius:16px; background:#1B1B1B; border:1px solid rgba(255,255,255,.1); position:relative; }
+  .ptext { position:absolute; left:22px; top:0; line-height:78px; font-size:25px; color:#F2F2F2; }
+  .ptext .ph { color:#6F6F6F; }
+  .caret { display:inline-block; width:2px; height:28px; background:#fff; vertical-align:middle; margin-left:2px; position:relative; top:-2px; }
+  .send { position:absolute; right:14px; top:19px; width:40px; height:40px; border-radius:11px; background:#fff; display:flex; align-items:center; justify-content:center; }
+</style>
+</head>
+<body>
+<div id="stage"></div>
+<script>
+const TH = V.theme, W = V.window || {}, SK = V.skill, PH = V.phone, EN = V.end, TI = V.title;
+const css = document.documentElement.style;
+for (const k of ['bg', 'ink', 'ink2', 'accent', 'inverse', 'onInverse', 'accentOnInverse']) css.setProperty('--' + k, TH[k]);
+css.setProperty('--font', `'${TH.font}'`);
+
+const ease = x => x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
+const eout = x => 1 - Math.pow(1 - x, 3);
+const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+const prog = (t, a, b) => clamp((t - a) / (b - a));
+function kf(t, keys, fn = ease) {
+  if (t <= keys[0][0]) return keys[0][1];
+  for (let i = 0; i < keys.length - 1; i++) { const [ta, va] = keys[i], [tb, vb] = keys[i + 1]; if (t <= tb) return va + (vb - va) * fn((t - ta) / (tb - ta)); }
+  return keys[keys.length - 1][1];
+}
+const D = 0.28; // dip through white between shots, like a page change
+const shotOp = (t, s, i) => (i === 0 ? 1 : ease(prog(t, s.t0, s.t0 + D))) * (1 - ease(prog(t, s.t1 - D, s.t1)));
+const el = (tag, cls, parent, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; (parent || stage).appendChild(e); return e; };
+const stage = document.getElementById('stage');
+
+// title
+let titleEl; if (TI) { titleEl = el('div', 'abs card'); el('div', 'eyebrow', titleEl, TI.eyebrow); el('div', 'big', titleEl, TI.name); if (TI.sub) el('div', 'sub', titleEl, TI.sub); }
+// window
+const win = el('div', 'abs'); win.id = 'win';
+const bar = el('div', 'bar', win); const dots = el('div', 'dots', bar); for (let i = 0; i < 3; i++) el('i', null, dots);
+const addr = el('div', 'addr', bar); const vp = el('div', 'vp', win);
+const S = 1520 / (W.pageWidth || 1200);
+const shotEls = V.shots.map(s => { const d = el('div', 'shot', vp); d.style.width = (W.pageWidth || 1200) + 'px'; for (const f of V.pages[s.pg].files) { const im = new Image(); im.src = f; d.appendChild(im); } return d; });
+let navEl = null; if (W.nav) { const n = new Image(); navEl = n; n.src = W.nav; n.className = 'navov'; vp.appendChild(n); }
+const addrSpans = Object.keys(V.pages).map(k => { const s = el('span', null, addr, V.pages[k].addr); s.dataset.pg = k; return s; });
+// phone
+let phone, pshot; if (PH) {
+  phone = el('div', 'abs'); phone.id = 'phone'; const scr = el('div', 'pscreen', phone);
+  pshot = el('div', 'pshot', scr); pshot.style.width = (PH.pageWidth || 390) + 'px';
+  for (const f of PH.files) { const im = new Image(); im.src = f; pshot.appendChild(im); }
+  if (PH.nav) { const n = new Image(); n.src = PH.nav; n.className = 'pnav'; scr.appendChild(n); }
+}
+// skill panel
+let skill, skInner, bullets = []; if (SK) {
+  skill = el('div', 'abs'); skill.id = 'skill';
+  const head = el('div', 'sk-head', skill); const row = el('div', 'sk-row', head);
+  el('span', 'sk-cmd', row, SK.cmd); el('span', 'sk-meta', row, SK.meta || 'Skill  ·  Runs on demand'); el('div', 'sk-desc', head, SK.desc);
+  const body = el('div', 'sk-body', skill); skInner = el('div', 'sk-inner', body);
+  for (const sec of SK.sections) { el('div', 'sk-h', skInner, sec.h); for (const l of sec.lines) { const b = el('div', 'sk-b', skInner); b.dataset.g = l.g || ''; el('div', 'band', b); el('span', null, b, l.text); bullets.push(b); } }
+  el('div', 'sk-fade', body);
+}
+// captions
+const caps = (V.captions || []).map(([a, b, text]) => { const c = el('div', 'abs cap'); el('span', null, c, text); return { c, a, b }; });
+// end card
+let endEl, ptext, menuEl; if (EN) {
+  endEl = el('div', 'abs card'); if (EN.eyebrow) el('div', 'eyebrow', endEl, EN.eyebrow); el('div', 'big', endEl, EN.name);
+  const ag = el('div', 'agent', endEl);
+  const tabs = el('div', 'ag-tabs', ag); el('span', 'on', tabs, 'Agent'); el('span', null, tabs, 'Style');
+  const sel = el('div', 'ag-sel', ag); const bx = el('div', 'box', sel); el('span', null, bx, EN.chat || 'New chat');
+  bx.insertAdjacentHTML('beforeend', '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9A9A9A" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>');
+  el('div', 'plus', sel).innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#B5B5B5" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>';
+  const agb = el('div', 'ag-body', ag); menuEl = el('div', 'ag-menu', agb); el('span', 'cmd', menuEl, EN.cmd || '/design-system'); el('span', 'd', menuEl, EN.desc || (SK && SK.desc) || '');
+  const pr = el('div', 'ag-comp', ag); ptext = el('div', 'ptext', pr);
+  const send = el('div', 'send', pr); send.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>';
+  const sub = el('div', 'sub', endEl, EN.line); sub.style.marginTop = '30px';
+}
+
+function seek(t) {
+  if (titleEl) {
+    const tin = eout(prog(t, TI.in, TI.in + 1)), tout = ease(prog(t, TI.out, TI.out + 0.6));
+    titleEl.style.opacity = tin * (1 - tout); titleEl.style.transform = `translateY(${(1 - tin) * 18 - tout * 14}px)`; titleEl.style.filter = `blur(${(1 - tin) * 6}px)`;
+  }
+  // window: in, hidden while the skill panel shows, shifted left while the phone shows, out before the end card
+  const wIn = eout(prog(t, W.in, W.in + 1));
+  let vis = wIn, wy = (1 - wIn) * 48, ws = 0.975 + 0.025 * wIn;
+  if (SK) {
+    const mid = (SK.t0 + SK.t1) / 2, out = ease(prog(t, SK.t0 - 0.2, SK.t0 + 0.45)), back = eout(prog(t, SK.t1 - 0.25, SK.t1 + 0.55));
+    if (t < mid) { vis *= 1 - out; wy -= 12 * out; ws *= 1 - 0.03 * out; } else { vis = back; wy = (1 - back) * 30; ws = 1; }
+  }
+  if (EN) { const e = ease(prog(t, EN.t0 - 0.25, EN.t0 + 0.35)); vis *= 1 - e; wy -= 10 * e; }
+  const shift = PH ? ease(prog(t, PH.t0 - 0.35, PH.t0 + 0.5)) * (1 - ease(prog(t, PH.t1 - 0.3, PH.t1 + 0.5))) : 0;
+  win.style.opacity = vis; win.style.transform = `translate(${-204 * shift}px, ${wy}px) scale(${ws * (1 - 0.107 * shift)})`; // with phone: window height = phone height (768), both centred on y=486, 77px side margins
+  V.shots.forEach((s, i) => { const op = shotOp(t, s, i); shotEls[i].style.opacity = op; shotEls[i].style.visibility = op > 0.001 ? 'visible' : 'hidden'; shotEls[i].style.transform = `scale(${S}) translateY(${-kf(t, s.keys)}px)`; });
+  if (navEl) { let h = 0; V.shots.forEach((s, i) => { if (V.pages[s.pg].nonav) h = Math.max(h, shotOp(t, s, i)); }); navEl.style.opacity = 1 - h; }
+  addrSpans.forEach(sp => { let op = 0; V.shots.forEach((s, i) => { if (s.pg === sp.dataset.pg) op = Math.max(op, shotOp(t, s, i)); }); sp.style.opacity = op; });
+  if (PH) {
+    const pIn = eout(prog(t, PH.t0 + 0.05, PH.t0 + 1)), pOut = ease(prog(t, PH.t1 - 0.3, PH.t1 + 0.35));
+    phone.style.opacity = pIn * (1 - pOut); phone.style.transform = `translate(${(1 - pIn) * 60 + pOut * 40}px, 0)`;
+    pshot.style.transform = `scale(${340 / (PH.pageWidth || 390)}) translateY(${-kf(t, PH.keys)}px)`;
+  }
+  if (SK) {
+    const kIn = eout(prog(t, SK.t0, SK.t0 + 0.95)), kOut = ease(prog(t, SK.t1 - 0.6, SK.t1));
+    skill.style.opacity = kIn * (1 - kOut); skill.style.transform = `translateY(${(1 - kIn) * 40 - kOut * 12}px) scale(${0.985 + 0.015 * kIn})`;
+    skInner.style.transform = `translateY(${-kf(t, [[SK.t0 + 0.9, 0], [SK.t1, SK.drift || 16]], x => x)}px)`;
+    const H = SK.hi || {}, order = Object.keys(H).sort((x, y) => H[x] - H[y]);
+    const anyHi = order.length ? prog(t, H[order[0]] - 0.25, H[order[0]] + 0.15) : 0;
+    bullets.forEach(b => {
+      const g = b.dataset.g, gi = order.indexOf(g); let on = 0, past = 0;
+      if (gi >= 0) { const st = H[g] - 0.15, nx = gi < order.length - 1 ? H[order[gi + 1]] - 0.15 : 1e9; on = ease(prog(t, st, st + 0.35)) * (1 - ease(prog(t, nx, nx + 0.35))); past = prog(t, nx, nx + 0.35); }
+      const base = 0.86 - 0.36 * anyHi;
+      b.querySelector('span').style.opacity = Math.max(base + (0.82 - base) * past, base + (1 - base) * on);
+      b.querySelector('.band').style.opacity = on;
+    });
+  }
+  caps.forEach(({ c, a, b }) => { const ci = eout(prog(t, a, a + 0.5)), co = ease(prog(t, b - 0.35, b)); c.style.opacity = ci * (1 - co); c.style.transform = `translateY(${(1 - ci) * 10}px)`; });
+  if (EN) {
+    const eIn = eout(prog(t, EN.t0, EN.t0 + 1));
+    endEl.style.opacity = eIn; endEl.style.transform = `translateY(${(1 - eIn) * 18}px)`; endEl.style.filter = `blur(${(1 - eIn) * 5}px)`;
+    const cmd = EN.cmd || '/design-system', ts = EN.t0 + 1.15, td = 0.075 * cmd.length;
+    const n = Math.round(clamp((t - ts) / td) * cmd.length);
+    const caretOn = t < ts || n < cmd.length || Math.floor((t - ts - td) / 0.53) % 2 === 0;
+    menuEl.style.opacity = eout(prog(t, ts + 0.05, ts + 0.45)); menuEl.style.transform = `translateY(${(1 - eout(prog(t, ts + 0.05, ts + 0.45))) * 8}px)`;
+    ptext.innerHTML = '';
+    if (n) el('span', null, ptext, cmd.slice(0, n));
+    const c = el('span', 'caret', ptext); c.style.opacity = caretOn ? 1 : 0;
+    if (!n) el('span', 'ph', ptext, ' ' + (EN.placeholder || 'Ask the agent'));
+  }
+}
+window.seek = seek;
+window.ready = async () => {
+  await Promise.all(['400 20px', '500 40px', '600 14px'].map(w => document.fonts.load(`${w} "${TH.font}"`).catch(() => null)));
+  await document.fonts.ready;
+  await Promise.all([...document.images].map(i => i.decode().catch(() => console.error('image failed: ' + i.src))));
+  return document.images.length;
+};
+seek(0);
+</script>
+</body>
+</html>

@@ -1,0 +1,12 @@
+{
+  "name": "openfile-principle",
+  "version": "0.1.0",
+  "description": "Critique a UI screenshot, site, Figma frame or code through 16 design principles: what's clearly off, why it matters, one question and one experiment for the next version. By UV. MIT.",
+  "author": {
+    "name": "UV",
+    "url": "https://github.com/imuvrays1"
+  },
+  "homepage": "https://github.com/imuvrays1/design-skills/tree/main/plugins/openfile-principle",
+  "repository": "https://github.com/imuvrays1/design-skills",
+  "license": "MIT"
+}

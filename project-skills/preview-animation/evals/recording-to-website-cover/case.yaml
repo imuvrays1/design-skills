@@ -1,0 +1,8 @@
+schema_version: "1.1"
+name: recording-to-website-cover
+context:
+  scaffold_script: place-files.sh
+expected_outcome: |
+  A silent MP4 cover loop of 4 to 10 seconds at the cover's 16:10 shape, cropped to the demo card,
+  with the lender's name covered in every frame, a loop point that can't be seen, a file under
+  1.5 MB tagged BT.709 with its index at the front, and a poster image taken from the loop.

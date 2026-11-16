@@ -1,0 +1,66 @@
+{
+  "name": "design-skills",
+  "description": "Design skills by UV: critique, page intros, working docs, design guardrails, audits, performance and Framer agent templates, for Claude Code.",
+  "owner": {
+    "name": "UV",
+    "url": "https://github.com/imuvrays1"
+  },
+  "plugins": [
+    {
+      "name": "all-design-skills",
+      "source": "./",
+      "strict": false,
+      "version": "0.1.0",
+      "description": "Every design skill by UV in one install: openfile-principle, cursor-build-intro, working-docs, design-guardrails, design-system-audit, perf-pass, framer-agent-template. MIT.",
+      "author": {
+        "name": "UV",
+        "url": "https://github.com/imuvrays1"
+      },
+      "license": "MIT",
+      "skills": [
+        "./plugins/openfile-principle/skills",
+        "./plugins/cursor-build-intro/skills",
+        "./plugins/working-docs/skills",
+        "./plugins/design-guardrails/skills",
+        "./plugins/design-system-audit/skills",
+        "./plugins/perf-pass/skills",
+        "./plugins/framer-agent-template/skills"
+      ]
+    },
+    {
+      "name": "openfile-principle",
+      "source": "./plugins/openfile-principle",
+      "description": "Critique a UI screenshot, site, Figma frame or code through 16 design principles: what's clearly off, why it matters, one question and one experiment for the next version. By UV. MIT."
+    },
+    {
+      "name": "cursor-build-intro",
+      "source": "./plugins/cursor-build-intro",
+      "description": "A page intro where labelled multiplayer cursors draw the page as frames with live W x H badges, then hand over to the real page. One dependency-free React component. By UV. MIT."
+    },
+    {
+      "name": "working-docs",
+      "source": "./plugins/working-docs",
+      "description": "Set up and keep AGENTS.md, DESIGN.md and CONTEXT.md, the working docs that let coding agents build a design project the way its designer would, and remember decisions between sessions. By UV. MIT."
+    },
+    {
+      "name": "design-guardrails",
+      "source": "./plugins/design-guardrails",
+      "description": "Turn a project's design rules into checks that fail the build or the verify run: tokens only, banned copy, real alt text, contrast, one h1, no overflow, a visible focus ring on every Tab stop. By UV. MIT."
+    },
+    {
+      "name": "design-system-audit",
+      "source": "./plugins/design-system-audit",
+      "description": "Audit a running product against its design system with measured evidence, rank P0 and P1, fix the root cause as a system change, then sweep the code with a property-scoped mapping. By UV. MIT."
+    },
+    {
+      "name": "perf-pass",
+      "source": "./plugins/perf-pass",
+      "description": "Make a design-heavy site load fast and scroll smoothly on an ordinary phone: a budget, a measured before and after, a cause for every symptom, and rules that keep it fast. By UV. MIT."
+    },
+    {
+      "name": "framer-agent-template",
+      "source": "./plugins/framer-agent-template",
+      "description": "Turn a Framer template into a Framer Marketplace Agent Template: styles, layer names, a /design-system page, agent skills, a demo video and the Marketplace form. By UV. MIT."
+    }
+  ]
+}

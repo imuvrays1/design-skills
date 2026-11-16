@@ -1,0 +1,9 @@
+schema_version: "1.1"
+name: storyboards-reflect-cover
+expected_outcome: |
+  A storyboard.md for the Reflect cover built from the case study's cue: a beat table with times
+  for a loop of 4 to 10 seconds that ends on the frame it starts on ("Audit: pending") without
+  playing the story backwards; a poster that is a settled frame showing the result (the Failed
+  verdict with a reason and High severity); alt text that says what happens in the loop; a list
+  of what to hide (consumer names, phone and account numbers, amounts tied to a person, the
+  agency's name) and the rule not to change a real verdict; motion values taken from DESIGN.md.

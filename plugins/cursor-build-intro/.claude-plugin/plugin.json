@@ -1,0 +1,12 @@
+{
+  "name": "cursor-build-intro",
+  "version": "0.1.0",
+  "description": "A page intro where labelled multiplayer cursors draw the page as frames with live W x H badges, then hand over to the real page. One dependency-free React component. By UV. MIT.",
+  "author": {
+    "name": "UV",
+    "url": "https://github.com/imuvrays1"
+  },
+  "homepage": "https://github.com/imuvrays1/design-skills/tree/main/plugins/cursor-build-intro",
+  "repository": "https://github.com/imuvrays1/design-skills",
+  "license": "MIT"
+}

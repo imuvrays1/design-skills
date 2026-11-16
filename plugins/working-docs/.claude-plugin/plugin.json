@@ -1,0 +1,12 @@
+{
+  "name": "working-docs",
+  "version": "0.1.0",
+  "description": "Set up and keep AGENTS.md, DESIGN.md and CONTEXT.md, the working docs that let coding agents build a design project the way its designer would, and remember decisions between sessions. By UV. MIT.",
+  "author": {
+    "name": "UV",
+    "url": "https://github.com/imuvrays1"
+  },
+  "homepage": "https://github.com/imuvrays1/design-skills/tree/main/plugins/working-docs",
+  "repository": "https://github.com/imuvrays1/design-skills",
+  "license": "MIT"
+}

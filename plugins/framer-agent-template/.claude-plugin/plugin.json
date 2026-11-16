@@ -1,0 +1,12 @@
+{
+  "name": "framer-agent-template",
+  "version": "0.1.0",
+  "description": "Turn a Framer template into a Framer Marketplace Agent Template: styles, layer names, a /design-system page, agent skills, a demo video and the Marketplace form. By UV. MIT.",
+  "author": {
+    "name": "UV",
+    "url": "https://github.com/imuvrays1"
+  },
+  "homepage": "https://github.com/imuvrays1/design-skills/tree/main/plugins/framer-agent-template",
+  "repository": "https://github.com/imuvrays1/design-skills",
+  "license": "MIT"
+}

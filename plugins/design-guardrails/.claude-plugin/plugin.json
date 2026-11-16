@@ -1,0 +1,12 @@
+{
+  "name": "design-guardrails",
+  "version": "0.1.0",
+  "description": "Turn a project's design rules into checks that fail the build or the verify run: tokens only, banned copy, real alt text, contrast, one h1, no overflow, a visible focus ring on every Tab stop. By UV. MIT.",
+  "author": {
+    "name": "UV",
+    "url": "https://github.com/imuvrays1"
+  },
+  "homepage": "https://github.com/imuvrays1/design-skills/tree/main/plugins/design-guardrails",
+  "repository": "https://github.com/imuvrays1/design-skills",
+  "license": "MIT"
+}

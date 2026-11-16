@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>__TITLE__ · Loops animation</title>
+<!--
+  __SLUG__ · Window format (DESIGN.md, Industry Graphic)
+  Made with the loops-animations skill. Serve the repo (node scripts/dev-server.mjs)
+  and open http://localhost:8080/design/animations/__SLUG__
+  Review params: ?theme=dark|light  ?w=<css px, the window width>  ?ar=1/1 (set the window on
+  a canvas of that aspect, for a social export)  ?hold=<ms> (a longer end hold, for export)
+  Space or the ring pauses.
+
+  BEAT SHEET (fill this in before writing the build; keep it true as you change it)
+  Point:   EXAMPLE. Loops checks the tool calls behind a rule, not just what was said: the promise was agreed, but log_promise never answered.
+  Object:  a window listing one call's three tool calls, each result landing as it returns.
+  Accent:  the ring's segments (progress), the flagged row's rail (the one finding).
+  Beats:   300ms    the first tool call comes up, its result lands, a ring segment lights
+           +500ms   each next call, the same way
+           ~1700ms  log_promise returns nothing: its row takes --inset, the rail draws, 4.1 Missed lands
+           ~2600ms  the source line rises; end state; hold --dur-breathe, fade out, loop
+-->
+<script>(function(){var q=new URLSearchParams(location.search),t=q.get('theme');if(t==='light'||t==='dark')document.documentElement.dataset.theme=t;})();</script>
+<link rel="stylesheet" href="/styles/tokens.css">
+<link rel="stylesheet" href="/styles/primitives.css">
+<link rel="stylesheet" href="/styles/site.css">
+<style>
+/* ---- review page: not part of the animation ---- */
+body{min-height:100svh;display:grid;place-items:center;padding:var(--space-40) var(--space-16)}
+.ls-frame{width:min(var(--w,720px),100%);container-type:inline-size}
+.ls-frame.ls-pad{display:grid;place-items:center;padding:var(--space-40);background:var(--canvas)}
+.ls-frame.ls-pad .ig{width:100%}
+html.is-rec body{min-height:0;display:block;padding:0}
+
+/* ---- __SLUG__: the animation's own styles. Tokens only, scoped to the figure.
+   The window, bar, body, foot and ring come from site.css (.ig, .ig-bar,
+   .ig-body, .ig-foot, .ic-ring); add only what this figure draws. ---- */
+[data-demo="__SLUG__"] .tc{list-style:none;margin:0;padding:0}
+[data-demo="__SLUG__"] .tc li{position:relative;display:grid;grid-template-columns:minmax(0,1fr) auto auto;align-items:center;gap:var(--space-12);padding:var(--space-12) var(--space-16);border-top:1px solid var(--rule)}
+[data-demo="__SLUG__"] .tc li:last-child{border-bottom:1px solid var(--rule)}
+[data-demo="__SLUG__"] .tc li > *{position:relative}
+[data-demo="__SLUG__"] .tc .fn{font-family:var(--mono);font-size:var(--text-mono);line-height:var(--leading-mono);color:var(--ink)}
+[data-demo="__SLUG__"] .tc .v{font-size:var(--text-body-m);line-height:var(--leading-body-m);color:var(--ink-2)}
+[data-demo="__SLUG__"] .tc .ok{width:var(--space-16);height:var(--space-16);color:var(--ink-3)}
+[data-demo="__SLUG__"] .tc li > .hl{position:absolute;inset:0;background:var(--inset)}
+[data-demo="__SLUG__"] .tc li > .rail{position:absolute;left:0;top:0;bottom:0;width:var(--space-2);background:var(--accent);transform-origin:50% 0}
+/* narrow: the result drops under the call, so the two never collide */
+@container (max-width:480px){
+  [data-demo="__SLUG__"] .tc li{grid-template-columns:minmax(0,1fr) auto;row-gap:var(--space-2)}
+  [data-demo="__SLUG__"] .tc .v{grid-row:2;grid-column:1}
+}
+</style>
+</head>
+<body>
+<div class="ls-frame">
+<!-- FIGURE. The markup is the END state: what shows without script, under reduced
+     motion, in print and off screen. [data-body] marks what fades out and back in
+     between loops. The ring is the pause control; its [data-seg] arcs are progress. -->
+<figure class="ig" data-demo="__SLUG__" aria-label="Sample: call 8f3a-2291's three tool calls. verify_identity matched and get_balance returned $1,284.16, but log_promise never answered, so rule 4.1 is missed">
+  <div class="ig-bar"><span class="ttl">Tool calls · Call 8f3a-2291</span>__RING__</div>
+  <div class="ig-body" data-body>
+    <ol class="tc">
+      <li><span class="fn">verify_identity</span><span class="v">match</span><svg class="ok" viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="square"/></svg></li>
+      <li><span class="fn">get_balance</span><span class="v">$1,284.16</span><svg class="ok" viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="square"/></svg></li>
+      <li class="miss"><i class="hl" aria-hidden="true"></i><i class="rail" aria-hidden="true"></i><span class="fn">log_promise</span><span class="v">no response</span><span class="pill pill-miss">4.1 Missed</span></li>
+    </ol>
+  </div>
+  <p class="ig-foot src" data-body><span>Sample data · Example collections SOP, rev 7</span></p>
+</figure>
+</div>
+<script>/*__ENGINE__*/</script>
+<script>
+/* review page: width, aspect and Space to pause */
+(function () {
+  var q = new URLSearchParams(location.search), frame = document.querySelector('.ls-frame');
+  if (q.get('w')) frame.style.setProperty('--w', parseFloat(q.get('w')) + 'px');
+  if (q.get('ar')) { frame.style.aspectRatio = q.get('ar'); frame.classList.add('ls-pad'); }
+})();
+
+/* BUILD. One function per figure, keyed by data-demo. It schedules every beat
+   against one clock that starts at 0 and returns the time the last beat ends.
+   Times are token sums (T.STEP, T.TIGHT, T.BASE, T.ENTER, T.LAND, T.SLOW), never
+   loose numbers. Everything not named here stays still. */
+var loops = LoopsLoop.mount({
+  '__SLUG__': function (t, el) {
+    var T = t.T;
+    var rows = [].slice.call(el.querySelectorAll('.tc li'));
+    var t0 = T.STEP * 3, at = function (i) { return t0 + i * T.STEP * 5; };
+    rows.forEach(function (r, i) {
+      var back = at(i) + T.ENTER;
+      /* the call goes out, then its result comes back and lands */
+      t.rise(r.querySelector('.fn'), at(i));
+      t.add(r.querySelector('.v'), [{ opacity: 0, transform: 'translate3d(' + t.tok('space-8') + ',0,0)' }, { opacity: 1, transform: 'translate3d(0,0,0)' }], back, T.BASE, T.STD);
+      t.seg(i, back);
+      if (r.classList.contains('miss')) {
+        /* the one finding: the row takes --inset, its rail draws down, the verdict lands */
+        t.fade(r.querySelector('.hl'), back + T.STEP, T.ENTER);
+        t.add(r.querySelector('.rail'), [{ transform: 'scaleY(0)' }, { transform: 'scaleY(1)' }], back + T.STEP, T.ENTER);
+        t.add(r.querySelector('.pill'), [{ opacity: 0, transform: 'translate3d(' + t.tok('space-8') + ',0,0)' }, { opacity: 1, transform: 'translate3d(0,0,0)' }], back + T.STEP * 3, T.BASE, T.STD);
+      } else {
+        t.fade(r.querySelector('.ok'), back + T.TIGHT);
+      }
+    });
+    var end = at(rows.length - 1) + T.ENTER + T.STEP * 3 + T.BASE;
+    /* [data-body] boxes fade between loops on their own: animate what is inside them */
+    t.rise(el.querySelector('.ig-foot span'), end);
+    return end + T.ENTER;
+  }
+});
+document.addEventListener('keydown', function (e) {
+  if (e.key === ' ' && !e.target.closest('button, a, input')) { e.preventDefault(); loops.forEach(function (l) { l.toggle(); }); }
+});
+</script>
+</body>
+</html>

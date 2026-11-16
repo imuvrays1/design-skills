@@ -1,0 +1,12 @@
+{
+  "name": "perf-pass",
+  "version": "0.1.0",
+  "description": "Make a design-heavy site load fast and scroll smoothly on an ordinary phone: a budget, a measured before and after, a cause for every symptom, and rules that keep it fast. By UV. MIT.",
+  "author": {
+    "name": "UV",
+    "url": "https://github.com/imuvrays1"
+  },
+  "homepage": "https://github.com/imuvrays1/design-skills/tree/main/plugins/perf-pass",
+  "repository": "https://github.com/imuvrays1/design-skills",
+  "license": "MIT"
+}

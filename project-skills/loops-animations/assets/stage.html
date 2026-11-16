@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>__TITLE__ · Loops animation</title>
+<!--
+  __SLUG__ · Stage format (DESIGN.md, Step Stage)
+  Made with the loops-animations skill. Serve the repo (node scripts/dev-server.mjs)
+  and open http://localhost:8080/design/animations/__SLUG__
+  Review params: ?theme=dark|light  ?w=<css px, sets the stage width: under 440 is 1:1,
+  440 to 619 is 4:3, 620 and up is 16:9; under 400 the site also tightens the window's rows>
+  ?ar=9/16 (force an aspect)  ?hold=<ms> (a longer end hold, for export)  Space pauses.
+
+  BEAT SHEET (fill this in before writing the build; keep it true as you change it)
+  Point:   EXAMPLE. Every call on rule 4.1 is checked; the one where the promise was never logged is flagged with its line.
+  Object:  a window listing four calls on one rule, each graded as the selection reaches it.
+  Chip:    the quote behind the miss, behind the flagged-line rail.
+  Accent:  the progress line, the chip's rail. (The miss itself stays --miss, on its pill.)
+  Beats:   300ms    status reads "Checking…", progress line starts
+           300ms+   every 600ms the selection reaches the next call, it comes up from queued,
+                    its verdict lands; the progress line steps
+           2700ms   the window settles up, the chip rises, its rail draws
+           ~3900ms  end state; hold --dur-breathe (2400ms), fade out, loop
+-->
+<script>(function(){var q=new URLSearchParams(location.search),t=q.get('theme');if(t==='light'||t==='dark')document.documentElement.dataset.theme=t;})();</script>
+<link rel="stylesheet" href="/styles/tokens.css">
+<link rel="stylesheet" href="/styles/primitives.css">
+<link rel="stylesheet" href="/styles/home.css">
+<style>
+/* ---- review page: not part of the animation ---- */
+body{min-height:100svh;display:grid;place-items:center;padding:var(--space-40) var(--space-16)}
+/* an outline, not a border, so ?w= is exactly the stage's width and its ratio */
+.ls-frame{width:min(var(--w,620px),100%);container-type:inline-size;outline:1px solid var(--rule)}
+.ls-frame .stage{border-top:0}
+html.is-rec body{min-height:0;display:block;padding:0}
+html.is-rec .ls-frame{outline:0}
+
+/* ---- __SLUG__: the animation's own styles. Tokens only, scoped to the figure.
+   Reuse the site's .stage classes (fo, win, fo-h, stat, prog, win-b, rows, sel,
+   fo-rows, pill, chip, chip-q, rail) before writing new ones. ---- */
+[data-demo="__SLUG__"] .fo-rows li{grid-template-columns:auto minmax(0,1fr) auto}
+[data-demo="__SLUG__"] .fo-rows .nm{color:var(--ink-2)}
+[data-demo="__SLUG__"] .fo-rows .miss .nm{color:var(--ink)}
+</style>
+</head>
+<body>
+<div class="ls-frame">
+<!-- FIGURE. The markup is the END state: what shows without script, under reduced
+     motion, in print and off screen. One product window ([data-main]) and one chip
+     ([data-chip]). [data-body] marks what fades out and back in between loops. -->
+<figure class="stage panel" data-demo="__SLUG__" aria-label="Sample: four calls checked against rule 4.1; on Luis Ortega's call the promise was never logged, and the line it relied on is quoted">
+  <div class="st">
+    <div class="fo win" data-main>
+      <p class="fo-h"><span class="ttl">Rule 4.1 · Promise logged</span><span class="stat" data-stat data-busy="Checking">1 of 4 missed</span></p>
+      <span class="prog" data-body aria-hidden="true"><i data-prog></i></span>
+      <div class="win-b" data-body>
+        <div class="rows"><span class="sel" aria-hidden="true"></span><ol class="fo-rows">
+          <li><i class="hl" aria-hidden="true"></i><b>09:12</b><span class="nm">Priya Shah</span><span class="pill">Met</span></li>
+          <li><i class="hl" aria-hidden="true"></i><b>09:40</b><span class="nm">Daniel Reyes</span><span class="pill">Met</span></li>
+          <li class="miss"><i class="hl" aria-hidden="true"></i><b>10:05</b><span class="nm">Luis Ortega</span><span class="pill pill-miss">Missed</span></li>
+          <li><i class="hl" aria-hidden="true"></i><b>10:31</b><span class="nm">Maria Chen</span><span class="pill">Met</span></li>
+        </ol></div>
+      </div>
+    </div>
+    <p class="fo chip chip-q" data-chip><i class="rail" aria-hidden="true"></i><span class="who">10:05 · Agent · evidence for 4.1</span><q>I've noted your $150 payment for October 3.</q></p>
+  </div>
+</figure>
+</div>
+<script>/*__ENGINE__*/</script>
+<script>
+/* review page: width, aspect and Space to pause */
+(function () {
+  var q = new URLSearchParams(location.search), frame = document.querySelector('.ls-frame');
+  if (q.get('w')) frame.style.setProperty('--w', parseFloat(q.get('w')) + 'px');
+  if (q.get('ar')) document.querySelector('[data-demo]').style.aspectRatio = q.get('ar');
+})();
+
+/* BUILD. One function per figure, keyed by data-demo. It schedules every beat
+   against one clock that starts at 0 and returns the time the last beat ends.
+   Times are token sums (T.STEP, T.TIGHT, T.BASE, T.ENTER, T.LAND, T.SLOW), never
+   loose numbers. Everything not named here stays still. */
+var loops = LoopsLoop.mount({
+  '__SLUG__': function (t, el) {
+    var T = t.T;
+    var rows = [].slice.call(el.querySelectorAll('.fo-rows li'));
+    var t0 = T.STEP * 3, at = function (i) { return t0 + i * T.ENTER; }, end = at(rows.length);
+    t.busy(end);
+    t.progress(rows.map(function (r, i) { return [at(i), (i + 1) / rows.length]; }));
+    rows.forEach(function (r, i) {
+      var land = at(i) + T.ENTER - T.BASE;
+      /* queued: the row waits dimmed and comes up to full as it is read */
+      t.add(r.querySelector('.nm'), [{ opacity: 0.32 }, { opacity: 1 }], at(i), T.ENTER, T.STD);
+      /* the verdict lands beside it as the selection arrives */
+      t.add(r.querySelector('.pill'), [{ opacity: 0, transform: 'translate3d(' + t.tok('space-8') + ',0,0)' }, { opacity: 1, transform: 'translate3d(0,0,0)' }], land, T.BASE, T.STD);
+      if (r.classList.contains('miss')) t.fade(r.querySelector('.hl'), end);
+    });
+    t.select(rows, rows.map(function (r, i) { return at(i) + T.ENTER - T.BASE; }), end);
+    /* the point lands: the window makes room, the chip rises, its rail draws */
+    var chip = el.querySelector('[data-chip]');
+    t.settle(end);
+    t.rise(chip, end + T.STEP, 'travel');
+    t.add(chip.querySelector('.rail'), [{ transform: 'scaleY(0)' }, { transform: 'scaleY(1)' }], end + T.STEP * 3, T.ENTER);
+    return end + T.STEP * 3 + T.ENTER;
+  }
+});
+document.addEventListener('keydown', function (e) {
+  if (e.key === ' ' && !e.target.closest('button, a, input')) { e.preventDefault(); loops.forEach(function (l) { l.toggle(); }); }
+});
+</script>
+</body>
+</html>

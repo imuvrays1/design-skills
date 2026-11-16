@@ -1,0 +1,12 @@
+{
+  "name": "design-system-audit",
+  "version": "0.1.0",
+  "description": "Audit a running product against its design system with measured evidence, rank P0 and P1, fix the root cause as a system change, then sweep the code with a property-scoped mapping. By UV. MIT.",
+  "author": {
+    "name": "UV",
+    "url": "https://github.com/imuvrays1"
+  },
+  "homepage": "https://github.com/imuvrays1/design-skills/tree/main/plugins/design-system-audit",
+  "repository": "https://github.com/imuvrays1/design-skills",
+  "license": "MIT"
+}

@@ -1,0 +1,7 @@
+---
+type: llm
+focus: trace
+weight: 1
+---
+
+The result matches this description: The full workflow runs on the given project: audit, colors tokenized after a dry run, styles and layers named by role, a complete design system page with exact names and usage notes on all breakpoints, a design-system skill (plus optional skills only for repeated tasks) installed and passing the name check, a handover with five test requests, a video script and the submission checklist, and nothing published.
